@@ -3,13 +3,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from typing import Literal
 
-bookings = Table(
-    "bookings",
-    Base.metadata,
-    Column("driver_id", Integer, ForeignKey("drivers.id"), primary_key=True),
-    Column("car_id", Integer, ForeignKey("cars.id"), primary_key=True)
-)
-
 
 class Fleet(Base):
     __tablename__ = "fleets"
@@ -36,3 +29,12 @@ class Car(Base):
     status = Column(String(20), default="AVAILABLE", nullable=False)
     booking = relationship("Booking", back_populates="car")
     drivers = relationship("Driver", secondary="bookings", back_populates="cars")
+
+
+class Booking(Base):
+    __tablename__ = "bookings"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    driver_id = Column(Integer, ForeignKey("drivers.id"))
+    car_id = Column(Integer, ForeignKey("cars.id"))
+    driver = relationship("Driver", back_populates="bookings")
+    car = relationship("Car", back_populates="bookings")
